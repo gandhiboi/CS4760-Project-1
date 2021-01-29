@@ -1,0 +1,14 @@
+# Project 1 - Linux Systems Calls and Library Functions
+# Kenan Krijestorac  
+# 11 February 2021  
+  
+[x] -h Print a help message and exit
+[] -L Follow symbolic links, if any. Default will be to not follow symbolic links
+[] -t Print information on file type
+[] -p Print permission bits asrwxrwxrwx
+[] -i Print the number of links to file in inode table
+[] -u Print theUIDassociated with the file
+[] -g Print theGIDassociated with the file
+[] -s Print the size of file in bytes.  If the size is larger than 1K, indicate the size in KB with a suffix K; if the size is larger than 1M, indicate the size in MB with a suffix M; if the size is larger than 1G, indicate the size in GB with a suffix G
+[] -d Show the time of last modification
+[] -l This option will be used to print information on the file as if the optionstpiugs are all specifiead
