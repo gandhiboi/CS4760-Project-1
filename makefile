@@ -1,9 +1,9 @@
 CC=gcc
-OBJ = transfer.o
-CFILE = transfer.c
+OBJ = bt.o
+CFILE = bt.c
 MATH = -lm
 Cleanup=rm -rf *.o transfer
-EXE = transfer
+EXE = bt
 WITHNAME = -o
 CFLAGS=-c
 
