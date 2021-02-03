@@ -11,62 +11,10 @@
 #include <pwd.h>
 #include <grp.h>
 
-/*
-typedef struct Queue {
-        int capacity;
-        int size;
-        int front;
-        int rear;
-        char** elements;
-} Queue;
+#include "queue.h"
+#include "permissions.h"
 
-Queue* createQueue(int maxElements) {
-        Queue* Q;
-        Q = (Queue*)malloc(sizeof(Queue));
-        Q->elements = (char**)malloc(sizeof(char*) * maxElements);
-        Q->size = 0;
-        Q->capacity = maxElements;
-        Q->front = 0;
-        Q->rear = -1;
-        return Q;
-}
-
-void dequeue(Queue* Q, char* element) {
-        if (Q->size != 0) {
-                Q->size--;
-                Q->front++;
-                if (Q->front == Q->capacity) {
-                        Q->front = 0;
-                }
-        }
-        return;
-}
-
-char* front(Queue* Q, char* element) {
-        if (Q->size != 0) {
-                return Q->elements[Q->front];
-        }
-        return NULL;
-}
-
-void enqueue(Queue* Q, char* element) {
-        if (Q->size == Q->capacity) {
-                printf("Queue is full\n");
-        }
-        else {
-                Q->size++;
-                Q->rear = Q->rear + 1;
-                if (Q->rear == Q->capacity) {
-                        Q->rear = 0;
-                }
-                Q->elements[Q->rear] = (char*)malloc((sizeof element + 1) * sizeof(char));
-                strcpy(Q->elements[Q->rear], element);
-        }
-        return;
-}
-
-*/
-void breadthFirst(char *dir,bool symlink, char *options);
+void traversal(char *dir ,bool symlink, char *options);
 
 int main(int argc, char* argv[]) {
 
@@ -76,6 +24,7 @@ int main(int argc, char* argv[]) {
         char option[10] = "";
         char* topdir, * targetdir, current[2] = ".";
 
+	setDir(argc, argv);
 
         while ((opt = getopt(argc, argv, "hLdgipstul")) != -1) {
                 switch (opt) {
@@ -92,7 +41,7 @@ int main(int argc, char* argv[]) {
                         printf("        -g      :       Print the GID associated with the file.\n");
                         printf("        -s      :       Print the size of file in bytes. Appropriate suffixes have been added.\n");
                         printf("        -d      :       Show the time of last modification.\n");
-                        printf("                -l      :       Used to print information on the file as if the options tpiugs are all specified.\n");
+                        printf("        -l      :       Used to print information on the file as if the options tpiugs are all specified.\n");
 
                         return EXIT_SUCCESS;
 
@@ -140,131 +89,79 @@ int main(int argc, char* argv[]) {
 
         }
 
-        if (argv[optind] == NULL) {
-                char origin[4096];
-                getcwd(origin, sizeof(origin));
-                topdir = origin;
-        }
-        else {
-                topdir = argv[optind];
-        }
+        //setDir(argc, argv);
 
-        printf("directory scan of:  %s\n", topdir);
+	extern char *dirname;
 
-        breadthFirst(topdir, symbolicLink, option);
+	//printf(dirname);
+
+	traversal(dirname, symbolicLink, option);
+
+        //printf("directory scan of:  %s\n", topdir);
 
         return EXIT_SUCCESS;
 }
 
-void breadthFirst(char* dir, bool symlink, char* options) {
+void traversal(char *dir, bool symlink, char *options) {
 
-        DIR* dp = opendir(dir);
-        struct dirent* entry;
-        entry = readdir(dp);
-        struct stat fileStat;
-        lstat(entry->d_name, &fileStat);
-        struct group* grp;
-        struct passwd* pwd;
-        struct tm lt;
-        int i;
-        char* fileType = "";
+	DIR *dp, *dire;
+	struct dirent *entry;
+	struct stat fileStat;
+	struct queue *q;
+	char * name;
+	long len_parent, len_child;
+	extern char *dirname;
 
-        //Queue* Q = createQueue(25);
+	q = makeQ();
+	enqueue(q, dir);
+	
+	dire = opendir(dir);
+	fileInfoBuilder(dir, symlink, options);
+	show();
+	closedir(dire);
 
-        while((entry = readdir(dp)) != NULL) {
-                //Queue* Q = createQueue(3);
-                if(strcmp(".", entry->d_name) == 0 || strcmp("..", entry->d_name) == 0 || strcmp (".git", entry->d_name) == 0){
-                        continue;
-                }
-                lstat(entry->d_name, &fileStat);
-               // if(S_ISDIR(fileStat.st_mode)) {
-               //         enqueue(Q, entry->d_name);
-                       printf("\nFile Name is %s", entry->d_name);
-                //        front(Q, entry->d_name);
-                 //       dequeue(Q, entry->d_name);
-                   //     front(Q, entry->d_name);
-               // }
-                //dequeue(Q, entry->d_name);
+	while(!isEmpty(q)) {
 		
+		//printf("\n\nHELLO\n\n");
 
-        for (i = 0; i < strlen(options); i++) {
-		//lstat(entry->d_name, &fileStat);
-                switch (options[i]) {
+		struct node *next = dequeue(q);
+		dp = opendir(next->dirname);
 
-                        case 'd':
-                                printf("%s", ctime(&fileStat.st_atime));
+		len_parent = strlen(next->dirname);
+		
+		while((entry = readdir(dp)) != NULL) {
+			/*
+ 			*  DOES NOT ENTER THIS IF STATEMENT 
+ 			*/
+			//if((strcmp(entry->d_name, ".") != 0) && (strcmp(entry->d_name, "..") != 0) && (strcmp(entry->d_name, ".git") != 0)) 
+			if((strcmp(entry->d_name, ".") != 0) && (strcmp(entry->d_name, "..") != 0) && (strcmp(entry->d_name, ".git") != 0)) {	
+				printf("\n\nHELLO\n\n");
+				len_child = strlen(entry->d_name);
+				name = (char *)malloc(sizeof(len_parent + len_child + 2));
+				name = concatPathLine(len_parent, len_child, next->dirname, entry->d_name);
+				if(lstat(name, &fileStat) < 0) {
+					printf("ERROR: %s: %s\n", name, strerror(errno));
+					free(name);
+				}
+				else {
+					if(S_ISDIR(fileStat.st_mode)){
+						printf("hello");
+						enqueue(q, name);
+						fileInfoBuilder(dirname, symlink, options);
+						show();
+					}
+					else {
+						printf("\nhello\n");
+						fileInfoBuilder(dirname,symlink,options);
+						show();
+						free(name);
+					}
+				}
+			}
+			closedir(dp);
+		}
 
-                        case 's':
-                                if (fileStat.st_size > 1000)
-                                        printf(" %dK", fileStat.st_size / 1000);
-                                else if (fileStat.st_size > 1000000)
-                                        printf(" %dM", fileStat.st_size / 1000000);
-                                else if (fileStat.st_size > 1e+9)
-                                        printf(" %dG", fileStat.st_size / 1e+9);
-                                else
-                                        printf(" %dB", fileStat.st_size);
+	}
 
-                               // printf("%s      , ", dir, fileStat.st_size);
-
-                        case 'u':
-                                pwd = getpwuid(fileStat.st_uid);
-                                if ((pwd = getpwuid(fileStat.st_uid)) != NULL)
-                                        printf(" {%s}", pwd->pw_name);
-                                else
-                                        printf(" {%d}", fileStat.st_uid);
-                                break;
-
-                        case 'g':
-                                grp = getgrgid(fileStat.st_gid);
-                                if ((grp = getgrgid(fileStat.st_gid)) != NULL)
-                                        printf(" %s", grp->gr_name);
-                                else
-                                        printf(" %d", fileStat.st_gid);
-                                break;
-
-                        case 'i':
-                                printf("[%d] ", fileStat.st_nlink);
-                                break;
-
-                        case 't':
-                                if (S_ISDIR(fileStat.st_mode)) {
-                                        fileType = "directory";
-                                        printf("[%s]", fileType);
-                                }
-                                else if (S_ISLNK(fileStat.st_mode)) {
-                                        fileType = "symbolicLink";
-                                        printf("[%s]", fileType);
-                                }
-                                else {
-                                        fileType = "file";
-                                        printf("[%s]", fileType);
-                                }
-                                break;
-
-                        case 'p':
-                                printf("\nFile Permissions: \t");
-
-                                if (S_ISDIR(fileStat.st_mode))
-                                        printf("d");
-                                else if (S_ISLNK(fileStat.st_mode))
-                                        printf("l");
-                                else
-                                        printf("-"); 
-
-				printf((fileStat.st_mode & S_IRUSR) ? "r" : "-");
-                                printf((fileStat.st_mode & S_IWUSR) ? "w" : "-");
-                                printf((fileStat.st_mode & S_IXUSR) ? "x" : "-");
-                                printf((fileStat.st_mode & S_IRGRP) ? "r" : "-");
-                                printf((fileStat.st_mode & S_IWGRP) ? "w" : "-");
-                                printf((fileStat.st_mode & S_IXGRP) ? "x" : "-");
-                                printf((fileStat.st_mode & S_IROTH) ? "r" : "-");
-                                printf((fileStat.st_mode & S_IWOTH) ? "w" : "-");
-                                printf((fileStat.st_mode & S_IXOTH) ? "x" : "-");
-                                printf("\n");
-                                break;
-                }
-        }
-
-}
 }
 
