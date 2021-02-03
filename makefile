@@ -1,21 +1,13 @@
-CC=gcc
-OBJ = bt.o
-CFILE = bt.c
-MATH = -lm
-Cleanup=rm -rf *.o transfer
-EXE = bt
-WITHNAME = -o
-CFLAGS=-c
+CC = gcc
+CFLAGS = -g
+TARGET = bt
+OBJS = bt.o queue.o permissions.o
 
-.SUFFIXES: .c .o
-
-all: $(EXE)
-
-$(EXE): $(OBJ)
-	$(CC) $(WITHNAME) $@ $(OBJ) $(MATH)
-
-.c.o:
-	$(CC) $(CFLAGS) $(MATH) $<
-
+$(TARGET): $(OBJS)
+	$(CC) -o $(TARGET) $(OBJS)
+bt.o: bt.c
+	$(CC) $(CFLAGS) -c bt.c
+queue.o: queue.c queue.h
+	$(CC) $(CFLAGS) -c queue.c
 clean:
-	$(Cleanup)
+	rm -f *.o $(TARGET)
