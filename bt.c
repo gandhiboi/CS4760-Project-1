@@ -22,9 +22,8 @@ int main(int argc, char* argv[]) {
         int opt;
         bool symbolicLink = false;
         char option[10] = "";
-        char* topdir, * targetdir, current[2] = ".";
 
-	setDir(argc, argv);
+	//setDir(argc, argv);
 
         while ((opt = getopt(argc, argv, "hLdgipstul")) != -1) {
                 switch (opt) {
@@ -47,6 +46,7 @@ int main(int argc, char* argv[]) {
 
                 case 'L':
                         symbolicLink = true;
+			strcat(option, "L");
                         break;
 
                 case 't':
@@ -89,15 +89,13 @@ int main(int argc, char* argv[]) {
 
         }
 
-        //setDir(argc, argv);
+        setDir(argc, argv);
 
 	extern char *dirname;
 
-	//printf(dirname);
+	printf("%s",dirname);
 
 	traversal(dirname, symbolicLink, option);
-
-        //printf("directory scan of:  %s\n", topdir);
 
         return EXIT_SUCCESS;
 }
@@ -122,46 +120,41 @@ void traversal(char *dir, bool symlink, char *options) {
 
 	while(!isEmpty(q)) {
 		
-		//printf("\n\nHELLO\n\n");
-
 		struct node *next = dequeue(q);
 		dp = opendir(next->dirname);
 
 		len_parent = strlen(next->dirname);
 		
 		while((entry = readdir(dp)) != NULL) {
-			/*
- 			*  DOES NOT ENTER THIS IF STATEMENT 
- 			*/
-			//if((strcmp(entry->d_name, ".") != 0) && (strcmp(entry->d_name, "..") != 0) && (strcmp(entry->d_name, ".git") != 0)) 
-			if((strcmp(entry->d_name, ".") != 0) && (strcmp(entry->d_name, "..") != 0) && (strcmp(entry->d_name, ".git") != 0)) {	
-				printf("\n\nHELLO\n\n");
-				len_child = strlen(entry->d_name);
-				name = (char *)malloc(sizeof(len_parent + len_child + 2));
-				name = concatPathLine(len_parent, len_child, next->dirname, entry->d_name);
-				if(lstat(name, &fileStat) < 0) {
-					printf("ERROR: %s: %s\n", name, strerror(errno));
-					free(name);
+			if(strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0 || strcmp(entry->d_name, ".git") == 0) {
+				continue;
+			}			
+
+			len_child = strlen(entry->d_name);
+			name = (char *)malloc(sizeof(len_parent + len_child + 2));
+			name = concatPathLine(len_parent, len_child, next->dirname, entry->d_name);
+			if(stat(name, &fileStat) == -1) {
+				printf("bt error: %s: %s\n", name, strerror(errno));
+				free(name);
+			}
+			else {
+				if(S_ISDIR(fileStat.st_mode)){
+					enqueue(q, name);
+					printf(name);
+					printf(": ");
+					fileInfoBuilder(name, symlink, options);
+					show();
 				}
 				else {
-					if(S_ISDIR(fileStat.st_mode)){
-						printf("hello");
-						enqueue(q, name);
-						fileInfoBuilder(dirname, symlink, options);
-						show();
-					}
-					else {
-						printf("\nhello\n");
-						fileInfoBuilder(dirname,symlink,options);
-						show();
-						free(name);
-					}
+					printf(name);
+					printf(": ");
+					fileInfoBuilder(name,symlink,options);
+					show();
+				//	free(name);
 				}
 			}
-			closedir(dp);
 		}
-
+			closedir(dp);
 	}
-
 }
 
