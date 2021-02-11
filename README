@@ -3,12 +3,86 @@
 # 11 February 2021  
   
 [x] -h Print a help message and exit
-[] -L Follow symbolic links, if any. Default will be to not follow symbolic links
-[] -t Print information on file type
-[] -p Print permission bits asrwxrwxrwx
-[] -i Print the number of links to file in inode table
-[] -u Print theUIDassociated with the file
-[] -g Print theGIDassociated with the file
-[] -s Print the size of file in bytes.  If the size is larger than 1K, indicate the size in KB with a suffix K; if the size is larger than 1M, indicate the size in MB with a suffix M; if the size is larger than 1G, indicate the size in GB with a suffix G
-[] -d Show the time of last modification
-[] -l This option will be used to print information on the file as if the optionstpiugs are all specifiead
+[x] -L Follow symbolic links, if any. Default will be to not follow symbolic links
+[x] -t Print information on file type
+[x] -p Print permission bits asrwxrwxrwx
+[x] -i Print the number of links to file in inode table
+[x] -u Print the UID associated with the file
+[x] -g Print the GID associated with the file
+[x] -s Print the size of file in bytes.  If the size is larger than 1K, indicate the size in KB with a suffix K; if the size is larger than 1M, indicate the size in MB with a suffix M; if the size is larger than 1G, indicate the size in GB with a suffix G
+[x] -d Show the time of last modification
+[x] -l This option will be used to print information on the file as if the options tpiugs are all specified
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+  
+ISSUES  
+  
+- certain options consume too much memory and traversal is aborted  
+- using current directory displays the path twice: as absolute and relative path  
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+
+HOW TO RUN  
+
+1. Type 'make' in the terminal  
+2. Run as './bt' followed by options then directory, or './bt' followed by directory then options  
+	a. ex: ./bt -l proj   OR ./bt proj -l  
+3. Type 'make clean' to remove executables and object files
+  
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+  
+VERSION CONTROL  
+  
+- repository is set to private; will make public 02/12/2021
+- realized I was only committing my main file (bt.c) but bt.c shows what I was working on throughout the weeks
+
+Commits on Feb 9, 2021
+cleaned up code; renamed variables; added comments; still have memory issue
+
+@gandhiboi
+gandhiboi committed 2 days ago
+ 
+Commits on Feb 4, 2021
+finished queue implementation and traverses properly; ISSUE: memory leak for large traversal and terminates
+
+@gandhiboi
+gandhiboi committed 7 days ago
+ 
+Commits on Feb 3, 2021
+adjusted makefile for the modified c files/header files
+
+@gandhiboi
+gandhiboi committed 8 days ago
+ 
+split code into different files; implemented queue; ISSUE: does not traverse properly
+
+@gandhiboi
+gandhiboi committed 8 days ago
+ 
+Commits on Feb 1, 2021
+fixed makefile to proper file
+
+@gandhiboi
+gandhiboi committed 10 days ago
+ 
+added makefile
+
+@gandhiboi
+gandhiboi committed 10 days ago
+ 
+implemented all options and began queue; issue with permissions adjusting to specified directory
+
+@gandhiboi
+gandhiboi committed 10 days ago
+ 
+Commits on Jan 31, 2021
+1/29/21 - implemented usage, and getopt
+
+@gandhiboi
+gandhiboi committed 10 days ago
+ 
+Commits on Jan 29, 2021
+Initial commit
+
+@gandhiboi
+gandhiboi committed 12 days ago
