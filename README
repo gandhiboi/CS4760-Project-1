@@ -13,6 +13,16 @@
 [x] -d Show the time of last modification
 [x] -l This option will be used to print information on the file as if the options tpiugs are all specified
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SOURCES
+
+- used links below for help with queue implementation; also lots of youtube
+- http://www.cs.yale.edu/homes/aspnes/classes/223/examples/linkedLists/queue.c
+- https://www.geeksforgeeks.org/queue-set-1introduction-and-array-implementation/
+- https://gist.github.com/sudheesh001/621cc7338d74a0562c99
+- https://gist.github.com/MoshiulRabbi/ff5566fd24a3fb4aa31b0decc0ff33d1
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
   
 ISSUES  
