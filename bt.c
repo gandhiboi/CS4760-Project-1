@@ -1,15 +1,21 @@
+/*
+ * Kenan Krijestorac
+ * Professor Hauschild
+ * Project 1
+ *
+ * Start: 01/29/2021
+ * Due: 02/11/2021
+ *
+ */
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
-#include <sys/types.h>
 #include <sys/stat.h>
 #include <stdbool.h>
 #include <getopt.h>
-#include <time.h>
-#include <unistd.h>
-#include <pwd.h>
-#include <grp.h>
 
 #include "queue.h"
 #include "permissions.h"
@@ -23,56 +29,55 @@ int main(int argc, char* argv[]) {
         int opt;
         bool symbolicLink = false;
         char option[10] = "";
-
-
 	
+	//parses arguments and cats option to string
         while ((opt = getopt(argc, argv, "hLdgipstul")) != -1) {
                 switch (opt) {
 
-                case 'h':
-			usage();
-                        exit(EXIT_SUCCESS);
+                	case 'h':
+				usage();
+                        	exit(EXIT_SUCCESS);
 
-                case 'L':
-                        symbolicLink = true;
-			strcat(option, "L");
-                        break;
+                	case 'L':
+                        	symbolicLink = true;
+				strcat(option, "L");
+                        	break;
 
-                case 't':
-                        strcat(option, "t");
-                        break;
+                	case 't':
+                        	strcat(option, "t");
+                        	break;
 
-                case 'p':
-                        strcat(option, "p");
-                        break;
+               		case 'p':
+                        	strcat(option, "p");
+                        	break;
 
-                case 'i':
-                        strcat(option, "i");
-                        break;
+                	case 'i':
+                        	strcat(option, "i");
+                        	break;
 
-                case 'u':
-                        strcat(option, "u");
-                        break;
+                	case 'u':
+                        	strcat(option, "u");
+                        	break;
 
-                case 'g':
-                        strcat(option, "g");
-                        break;
+               		case 'g':
+                        	strcat(option, "g");
+                        	break;
 
-                case 's':
-                        strcat(option, "s");
-                        break;
+                	case 's':
+                        	strcat(option, "s");
+                        	break;
 
-                case 'd':
-                        strcat(option, "d");
-                        break;
+                	case 'd':
+                        	strcat(option, "d");
+                        	break;
 
-                case 'l':
-                        strcat(option, "tpiugs");
-                        break;
+                	case 'l':
+                        	strcat(option, "tpiugs");
+                        	break;
 
-                default:
-                        perror("bt.c: error: please use -h option for more info.\n");
-                        exit(EXIT_FAILURE);
+                	default:
+                        	perror("bt.c: error: please use -h option for more info.\n");
+                        	exit(EXIT_SUCCESS);
                 }
 
 
@@ -83,7 +88,7 @@ int main(int argc, char* argv[]) {
 
 	//Used to reference dirname from different source file (permissions.c)
 	extern char *dirname;
-	printf("%s",dirname);					//Prints first directory name
+	printf("%s ",dirname);					//Prints first directory name
 
 	//does the breadth-first traversal of initial directory
 	traversal(dirname, symbolicLink, option);
@@ -98,13 +103,13 @@ void traversal(char *dir, bool symlink, char *options) {
 	struct dirent *entry;				//dirent structure; used to obtain info about dir
 	struct stat fileStat;				//file permissions; similar to dirent
 
-	struct queue *q;				//
+	struct queue *q;			
 	
 	//holds the name of complete path of directory/file
 	char * name;
 	
-	//Used for dynamically allocating size of name
-	long len_parent, len_child;
+	//Used for setting size of name in queue.h
+	long parentLength, childLength;
 	extern char *dirname;
 
 	//initializes the queue and queues the first dir
@@ -125,7 +130,7 @@ void traversal(char *dir, bool symlink, char *options) {
 		struct node *next = dequeue(q);
 		dp = opendir(next->dirname);
 
-		len_parent = strlen(next->dirname);
+		parentLength = strlen(next->dirname);						//stors length of next directory in queue
 		
 		//loops until there entry is not pointing at null
 		while((entry = readdir(dp)) != NULL) {
@@ -133,12 +138,10 @@ void traversal(char *dir, bool symlink, char *options) {
 				continue;
 			}			
 
-			len_child = strlen(entry->d_name);
-			name = (char *)malloc(sizeof(len_parent + len_child + 2));					//dynamically allocates memory for name of path
-			name = addPath(len_parent, len_child, next->dirname, entry->d_name);				//concatenates next dir/file to the whole path name
-			if(stat(name, &fileStat) == -1) {
+			childLength = strlen(entry->d_name);									//
+			name = addPath(parentLength, childLength, next->dirname, entry->d_name);				//concatenates next dir/file to the whole path name
+			if(lstat(name, &fileStat) == -1) {
 				perror("bt.c: error: stat failed in traversal");
-				free(name);
 			}
 			else {
 				//queues if it is a directory and displays info otherwise just display info
