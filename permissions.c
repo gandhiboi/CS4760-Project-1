@@ -2,7 +2,7 @@
 
 #define TIMEVAR 26
 
-char fileInfo[5096] = "";
+char fileInfo[256] = "";
 char *dirname;
 
 //initializes the directory name, if specified use that directory, if not use cwd
@@ -64,7 +64,7 @@ void filePermissions(char *path, bool symlink, char* options) {
 			//retrieves current time and date and concatenates to string
                         case 'd':
 				strncpy(mtime, ctime(&fileStat.st_mtime), TIMEVAR - 1);
-				mtime[TIMEVAR - 2] = 0;
+				mtime[TIMEVAR - 2] = 0;									
 				concat(mtime);
 				concat(" ");
 				break;
@@ -144,7 +144,7 @@ void filePermissions(char *path, bool symlink, char* options) {
                                 if (S_ISDIR(fileStat.st_mode)) {
                                         concat("d");
 				}
-                                else if (S_ISLNK(fileStat.st_mode)) {
+                                else if (S_ISLNK(fileStat.st_mode)) {					//l if it's a symbolic link
                                         concat("l");
 				}
                                 else {
