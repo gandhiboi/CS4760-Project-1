@@ -46,6 +46,8 @@ VERSION CONTROL
 - repository is set to private; will make public 02/12/2021
 - realized I was only committing my main file (bt.c) but bt.c shows what I was working on throughout the weeks
 
+- https://github.com/gandhiboi/CS4760-Project-1  
+
 Commits on Feb 9, 2021
 cleaned up code; renamed variables; added comments; still have memory issue
 
